@@ -7,8 +7,9 @@ trigger:
 - main
 
 pool:
+  name: Default
   vmImage: 'windows-latest'
-  demands: Limit -equals DisAbleParallel
+  demands: Limit -equals DisableParallel
 
 variables:
   solution: '**/*.sln'
