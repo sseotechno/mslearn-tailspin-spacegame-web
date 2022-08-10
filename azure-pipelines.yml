@@ -30,8 +30,23 @@ steps:
 - script: './node_modules/.bin/node-sass Tailspin.SpaceGame.Web/wwwroot --output Tailspin.SpaceGame.Web/wwwroot'
   displayName: 'Compile Sass assets'
 
+# gulp
+# Run the gulp Node.js streaming task-based build system
 - task: gulp@1
   displayName: 'Run gulp tasks'
+  inputs:
+    gulpFile: 'gulpfile.js' 
+    #targets: # Optional
+    #arguments: # Optional
+    #workingDirectory: # Optional
+    #gulpjs: # Optional
+    #publishJUnitResults: false # Optional
+    #testResultsFiles: '**/TEST-*.xml' # Required when publishJUnitResults == True
+    #testRunTitle: # Optional
+    #enableCodeCoverage: false 
+    #testFramework: 'Mocha' # Optional. Options: mocha, jasmine
+    #srcFiles: # Optional
+    #testFiles: 'test/*.js' # Required when enableCodeCoverage == True
 
 - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
   displayName: 'Write build info'
@@ -62,7 +77,7 @@ steps:
   parameters:
     buildConfiguration: 'Release'
 
-
+  
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   condition: succeeded()
