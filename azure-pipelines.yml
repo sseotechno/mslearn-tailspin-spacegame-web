@@ -11,8 +11,8 @@ pool:
   name: Default
   vmImage: 'windows-latest'
   demands: 
-    Limit -equals DisAbleParallel
-    npm
+  - Limit -equals DisAbleParallel
+  - npm
 
 variables:
   solution: '**/*.sln'
