@@ -10,7 +10,9 @@ trigger:
 pool:
   name: Default
   vmImage: 'windows-latest'
-  demands: Limit -equals DisAbleParallel
+  demands: 
+    Limit -equals DisAbleParallel
+    npm
 
 variables:
   solution: '**/*.sln'
