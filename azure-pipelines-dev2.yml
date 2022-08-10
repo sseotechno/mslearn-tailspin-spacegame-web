@@ -5,7 +5,7 @@
 # test release
 
 trigger:
-- main
+- dev2
 
 pool:
   name: Default
