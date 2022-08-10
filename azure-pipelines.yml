@@ -23,7 +23,6 @@ variables:
 
 steps:
 - task: NuGetToolInstaller@1
-
 - task: Npm@1
   displayName: 'Run npm install'
   inputs:
@@ -32,12 +31,21 @@ steps:
 - script: './node_modules/.bin/node-sass Tailspin.SpaceGame.Web/wwwroot --output Tailspin.SpaceGame.Web/wwwroot'
   displayName: 'Compile Sass assets'
 
+
+- task: gulp@0
+  inputs:
+    gulpFile: 'gulpfile.js'
+    targets: 
+    workingDirectory: '$(Build.SourcesDirectory)'
+    gulpjs: 'node_modules/gulp/bin/gulp.js'
+    enableCodeCoverage: false
+    
 # gulp
 # Run the gulp Node.js streaming task-based build system
-- task: gulp@1
-  displayName: 'Run gulp tasks'
-  inputs:
-    gulpFile: './gulpfile.js' 
+#- task: gulp@1
+ # displayName: 'Run gulp tasks'
+  #inputs:
+   # gulpFile: './gulpfile.js' 
     #targets: # Optional
     #arguments: # Optional
     #workingDirectory: # Optional
