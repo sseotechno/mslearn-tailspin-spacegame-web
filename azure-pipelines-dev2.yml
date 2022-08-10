@@ -1,0 +1,94 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+# test release
+
+trigger:
+- main
+
+pool:
+  name: Default
+  vmImage: 'windows-latest'
+  demands: 
+  - Limit -equals DisAbleParallel
+  - npm
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  wwwrootDir: 'Tailspin.SpaceGame.Web/wwwroot'
+  dotnetSdkVersion: '6.x'
+
+steps:
+- task: NuGetToolInstaller@1
+- task: Npm@1
+  displayName: 'Run npm install'
+  inputs:
+    verbose: false
+
+- script: './node_modules/.bin/node-sass Tailspin.SpaceGame.Web/wwwroot --output Tailspin.SpaceGame.Web/wwwroot'
+  displayName: 'Compile Sass assets'
+
+
+- task: gulp@0
+  inputs:
+    gulpFile: 'gulpfile.js'
+    targets: 
+    workingDirectory: '$(Build.SourcesDirectory)'
+    gulpjs: 'node_modules/gulp/bin/gulp.js'
+    enableCodeCoverage: false
+    
+# gulp
+# Run the gulp Node.js streaming task-based build system
+#- task: gulp@1
+ # displayName: 'Run gulp tasks'
+  #inputs:
+   # gulpFile: './gulpfile.js' 
+    #targets: # Optional
+    #arguments: # Optional
+    #workingDirectory: # Optional
+    #gulpjs: # Optional
+    #publishJUnitResults: false # Optional
+    #testResultsFiles: '**/TEST-*.xml' # Required when publishJUnitResults == True
+    #testRunTitle: # Optional
+    #enableCodeCoverage: false 
+    #testFramework: 'Mocha' # Optional. Options: mocha, jasmine
+    #srcFiles: # Optional
+    #testFiles: 'test/*.js' # Required when enableCodeCoverage == True
+
+- script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
+  displayName: 'Write build info'
+  workingDirectory: Tailspin.SpaceGame.Web/wwwroot
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+    
+- template: templates/build.yml
+  parameters:
+    buildConfiguration: 'Debug'
+  
+- template: templates/build.yml
+  parameters:
+    buildConfiguration: 'Release'
+
+  
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  condition: succeeded()
+  
