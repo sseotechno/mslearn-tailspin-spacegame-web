@@ -35,7 +35,7 @@ steps:
 - task: gulp@1
   displayName: 'Run gulp tasks'
   inputs:
-    gulpFile: 'gulpfile.js' 
+    gulpFile: './gulpfile.js' 
     #targets: # Optional
     #arguments: # Optional
     #workingDirectory: # Optional
