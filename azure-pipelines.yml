@@ -61,12 +61,22 @@ steps:
     arguments: 'restore'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Run unit tests - $(buildConfiguration)'
+  displayName: 'Run unit tests 1 - $(buildConfiguration)'
+  inputs:
+    command: 'test'
+    arguments: '--no-build --configuration $(buildConfiguration)'
+    publishTestResults: true
+    projects: '**/*.Tests.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run unit tests 2 - $(buildConfiguration)'
   inputs:
     command: 'test'
     arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
     publishTestResults: true
     projects: '**/*.Tests.csproj'
+
+
 
 - task: DotNetCoreCLI@2
   displayName: 'Create code coverage report'
